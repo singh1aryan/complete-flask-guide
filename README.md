@@ -417,6 +417,124 @@ In this example, the React app uses the **`useState`** and **`useEffect`** hooks
 
 The React app is rendered using a functional component with a **`render`** method that returns a JSX element. The JSX element displays the "Flask Backend" heading and the message from the Flask backend. When the app is run, the **`useEffect`** hook will make the AJAX request to the Flask backend and the message will be displayed on the page. This is a simple example, but it shows how to connect a React app to a backend using AJAX requests. You can add more components, state, and functionality to the app to create more complex and useful applications.
 
+## Flask + Open AI complete app
+
+### Flask
+
+Here is a simple Flask app that integrates with the OpenAI API to generate text using the GPT-3 model:
+
+```python
+from flask import Flask, request, jsonify
+import openai
+
+app = Flask(__name__)
+
+# Set the OpenAI API key
+openai.api_key = "YOUR_API_KEY"
+
+@app.route("/generate-text", methods=["POST"])
+def generate_text():
+    # Get the prompt and number of tokens to generate from the request
+    prompt = request.json["prompt"]
+    num_tokens = request.json["num_tokens"]
+
+    # Use the OpenAI API to generate text
+    response = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt=prompt,
+        max_tokens=num_tokens,
+        temperature=0.5,
+    )
+
+    # Return the generated text
+    return jsonify({"generated_text": response["choices"][0]["text"]})
+
+if __name__ == "__main__":
+    app.run()
+```
+
+To use this app, you will need to replace **`YOUR_API_KEY`** with your own OpenAI API key. You can then use the **`/generate-text`** endpoint to generate text using the GPT-3 model. The endpoint accepts a JSON object containing a **`prompt`** and a **`num_tokens`** parameter, and returns the generated text.
+
+For example, you could make a **`POST`** request to the endpoint with the following JSON object:
+
+```
+{
+    "prompt": "The quick brown fox jumps over the lazy dog.",
+    "num_tokens": 50
+}
+```
+
+This would generate 50 tokens of text based on the provided prompt using the GPT-3 model. The response would be a JSON object containing the generated text, like this:
+
+```
+{
+    "generated_text": "The quick brown fox jumps over the lazy dog. He runs into the forest and starts to explore. He finds a clearing with a beautiful stream and decides to take a drink. As he is drinking, he hears a noise behind him and turns around to see a bear."
+}
+```
+
+Note that this is just a simple example, and there are many other ways that you can integrate the OpenAI API into a Flask app depending on your specific requirements and use cases.
+
+### Frontend - react
+
+Here is an example of how you could connect the Flask app from the previous answer to a simple React frontend:
+
+```jsx
+import React, { useState } from "react";
+import axios from "axios";
+
+function App() {
+  const [prompt, setPrompt] = useState("");
+  const [numTokens, setNumTokens] = useState(50);
+  const [generatedText, setGeneratedText] = useState("");
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    try {
+      // Make a request to the Flask app to generate text
+      const response = await axios.post("http://localhost:5000/generate-text", {
+        prompt,
+        num_tokens: numTokens
+      });
+
+      // Update the state with the generated text
+      setGeneratedText(response.data.generated_text);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="prompt">Prompt:</label>
+        <input
+          type="text"
+          id="prompt"
+          value={prompt}
+          onChange={e => setPrompt(e.target.value)}
+        />
+        <label htmlFor="numTokens">Number of Tokens:</label>
+        <input
+          type="number"
+          id="numTokens"
+          value={numTokens}
+          onChange={e => setNumTokens(e.target.value)}
+        />
+        <button type="submit">Generate Text</button>
+      </form>
+      <p>Generated Text: {generatedText}</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+In this example, the React app has a form where the user can enter a prompt and the number of tokens to generate. When the form is submitted, the app makes a **`POST`** request to the Flask app's **`/generate-text`** endpoint with the prompt and number of tokens as parameters. The response from the Flask app, which contains the generated text, is then displayed in the React app.
+
+Note that this is just a simple example, and there are many different ways that you can integrate a React frontend with a Flask backend depending on your specific requirements and use cases.
+
 ## Deploying the Flask app
 
 1. Choose a hosting provider, such as Heroku, AWS, or Google Cloud Platform, and create an account with them.
@@ -458,3 +576,16 @@ The React app is rendered using a functional component with a **`render`** metho
 8. Flask CRUD with MySQL by Traversy Media: **[https://www.youtube.com/watch?v=5JnMutdy6Fw](https://www.youtube.com/watch?v=5JnMutdy6Fw)**
 9. Flask Basics by Dev Ed: **[https://www.youtube.com/watch?v=MwZwr5Tvyxo](https://www.youtube.com/watch?v=MwZwr5Tvyxo)**
 10. Flask Tutorial #2 - Templates by Kalle Hallden: **[https://www.youtube.com/watch?v=QnDWIZuWYW0&t=1245s](https://www.youtube.com/watch?v=QnDWIZuWYW0&t=1245s)**
+
+## Build these projects
+
+1. A simple to-do list application that allows users to add, view, and mark tasks as completed.
+2. A blog or content management system (CMS) that allows users to create, edit, and publish posts and pages.
+3. A social networking platform that allows users to create profiles, connect with friends, and share updates and photos.
+4. An e-commerce platform that allows users to browse and purchase products, and includes features such as a shopping cart and checkout process.
+5. A task management or project management application that allows users to create and assign tasks to team members, track progress, and collaborate on projects.
+6. A messaging or chat application that allows users to communicate with each other in real-time.
+7. A booking or reservation system that allows users to search for and book hotels, flights, or other services.
+8. A gaming or trivia platform that allows users to compete against each other in various games or quizzes.
+9. A financial or budgeting application that helps users track their income, expenses, and savings.
+10. A data visualization or dashboard application that allows users to view and analyze data from various sources.
